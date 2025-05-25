@@ -1,6 +1,4 @@
-// Описаний в документації
 import flatpickr from 'flatpickr';
-// Додатковий імпорт стилів
 import 'flatpickr/dist/flatpickr.min.css';
 
 import iziToast from 'izitoast';
@@ -36,34 +34,26 @@ startBtn.addEventListener('click', () => {
   if (!isDateInFuture(usersSelectedDate)) {
     return;
   }
+
   startBtn.setAttribute('disabled', true);
   dateInput.element.setAttribute('disabled', true);
 
-  const updateTimer = () => {
+  const intervalId = setInterval(() => {
     const now = Date.now();
     const deltaTime = usersSelectedDate - now;
-    const remainMs = Math.ceil(deltaTime / 1000) * 1000;
-    if (remainMs <= 0) {
+
+    if (deltaTime <= 0) {
+      clearInterval(intervalId);
       displayTime();
-      return false;
+      dateInput.element.removeAttribute('disabled');
+      return;
     }
-    displayTime(convertMs(remainMs));
-    return true;
-  };
 
-  updateTimer();
+    displayTime(convertMs(deltaTime));
+  }, 1000);
 
-  const msToNextSecond = 1000 - (Date.now() % 1000);
-
-  setTimeout(() => {
-    if (!updateTimer()) return;
-    const intervalId = setInterval(() => {
-      if (!updateTimer()) {
-        clearInterval(intervalId);
-        dateInput.element.removeAttribute('disabled');
-      }
-    }, 1000);
-  }, msToNextSecond);
+  // Показуємо перше значення негайно
+  displayTime(convertMs(usersSelectedDate - Date.now()));
 });
 
 function convertMs(ms) {
@@ -71,10 +61,12 @@ function convertMs(ms) {
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
+
   const days = Math.floor(ms / day);
   const hours = Math.floor((ms % day) / hour);
   const minutes = Math.floor(((ms % day) % hour) / minute);
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
   return { days, hours, minutes, seconds };
 }
 
