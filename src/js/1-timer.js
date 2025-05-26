@@ -70,7 +70,9 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-function displayTime({ days = 0, hours = 0, minutes = 0, seconds = 0 } = {}) {
+function displayTime(time = {}) {
+  const { days = 0, hours = 0, minutes = 0, seconds = 0 } = time;
+
   dayOut.textContent = String(days).padStart(2, '0');
   hourOut.textContent = String(hours).padStart(2, '0');
   minOut.textContent = String(minutes).padStart(2, '0');
